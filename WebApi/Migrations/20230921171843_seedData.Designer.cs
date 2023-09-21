@@ -11,8 +11,8 @@ using WebApi.Repositories;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230921141146_startPoint")]
-    partial class startPoint
+    [Migration("20230921171843_seedData")]
+    partial class seedData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,12 +34,33 @@ namespace WebApi.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Title")
-                        .HasColumnType("int");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Price = 75m,
+                            Title = "Karagöz ve Hacivat"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Price = 120m,
+                            Title = "Halit Amca"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Price = 135m,
+                            Title = "Sarı Toros"
+                        });
                 });
 #pragma warning restore 612, 618
         }
