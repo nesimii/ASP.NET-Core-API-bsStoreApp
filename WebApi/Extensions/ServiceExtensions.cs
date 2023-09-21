@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Repositories.Contracts;
 using Repositories.EFCore;
 
 namespace WebApi.Extensions
@@ -11,6 +12,11 @@ namespace WebApi.Extensions
             {
                 options.UseSqlServer(configuration.GetConnectionString("MsSqlLocalConnectionBsStoreApp"));
             });
+        }
+
+        public static void ConfigureRepositoryManager(this IServiceCollection services)
+        {
+            services.AddScoped<IRepositoryManager, RepositoryManager>();
         }
     }
 }

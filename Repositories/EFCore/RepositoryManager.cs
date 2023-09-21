@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.EFCore
 {
-    public abstract class RepositoryManager : IRepositoryManager
+    public class RepositoryManager : IRepositoryManager
     {
         private readonly RepositoryContext _context;
         private readonly Lazy<IBookRepository> _bookRepository;
