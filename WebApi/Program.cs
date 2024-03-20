@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using NLog;
-using Repositories.EFCore;
 using Services.Contracts;
 using WebApi.Extensions;
 
@@ -19,6 +17,7 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureLoggerService();
+builder.Services.ConfigureAutoMapperService();
 
 var app = builder.Build();
 
