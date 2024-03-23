@@ -33,6 +33,7 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureAutoMapperService();
 builder.Services.ConfigureActionFilters();
+builder.Services.ConfigureCors();
 #endregion
 
 var app = builder.Build();
@@ -53,6 +54,8 @@ if (app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
