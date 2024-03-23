@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Presentation.ActionFilters;
 using Repositories.Contracts;
 using Repositories.EFCore;
 using Services;
@@ -34,6 +35,11 @@ namespace WebApi.Extensions
         public static void ConfigureAutoMapperService(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(ServiceExtensions));
+        }
+        public static void ConfigureActionFilters(this IServiceCollection services)
+        {
+            services.AddScoped<ValidationFilterAttribute>();
+            services.AddSingleton<LogFilterAttribute>();
         }
     }
 }
