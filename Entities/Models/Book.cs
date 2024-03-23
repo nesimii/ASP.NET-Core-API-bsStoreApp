@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Models.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Book
+    public class Book : IEntityBase
     {
         public int Id { get; set; }
         public string Title { get; set; }
