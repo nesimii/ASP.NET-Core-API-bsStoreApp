@@ -4,7 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Entities.RequestFeatures;
 using Repositories.Contracts;
-using Repositories.EFCore;
+using Repositories.EFCore.Extensions;
 using Services.Contracts;
 
 namespace Services
@@ -27,8 +27,9 @@ namespace Services
             if (!bookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
 
             IQueryable<Book> books = await _manager.Book.GetBooksEntityAsync(trackChanges);
+            IQueryable<Book> filterBooks = books.FilterBooks(bookParameters).Search(bookParameters.SearchTerm);
 
-            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(books.FilterBooks(bookParameters), bookParameters.PageNumber, bookParameters.PageSize);
+            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(filterBooks, bookParameters.PageNumber, bookParameters.PageSize);
 
             var booksDto = _mapper.Map<IEnumerable<BookDto>>(booksWithMetaData);
             return (booksDto, booksWithMetaData.MetaData);
