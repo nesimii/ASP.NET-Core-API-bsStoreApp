@@ -27,7 +27,7 @@ namespace Services
             if (!bookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
 
             IQueryable<Book> books = await _manager.Book.GetBooksEntityAsync(trackChanges);
-            IQueryable<Book> filterBooks = books.FilterBooks(bookParameters).Search(bookParameters.SearchTerm);
+            IQueryable<Book> filterBooks = books.FilterBooks(bookParameters).Search(bookParameters.SearchTerm).Sort(bookParameters.OrderBy);
 
             PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(filterBooks, bookParameters.PageNumber, bookParameters.PageSize);
 
