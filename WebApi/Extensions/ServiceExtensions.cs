@@ -29,7 +29,7 @@ namespace WebApi.Extensions
 
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
-            services.AddSingleton<ILoggerService, LoggerManager>();
+            services.AddSingleton<ILoggerService, LoggerService>();
         }
 
         public static void ConfigureAutoMapperService(this IServiceCollection services)

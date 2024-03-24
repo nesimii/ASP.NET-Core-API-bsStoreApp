@@ -3,35 +3,32 @@ using Entities.DataTransferObjects;
 using Entities.Exceptions;
 using Entities.Models;
 using Entities.RequestFeatures;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Repositories.Contracts;
+using Repositories.EFCore;
 using Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
-    public class BookManager : IBookService
+    public class BookService : IBookService
     {
         private readonly IRepositoryManager _manager;
         private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
 
-        public BookManager(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
+        public BookService(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
         {
             _manager = manager;
             _logger = logger;
             _mapper = mapper;
         }
 
-        public async Task<(IEnumerable<BookDto> books, MetaData metaData)> GetAllBooksAsync(BookParameters bookParameters, bool trackChanges)
+        public async Task<(IEnumerable<BookDto> books, MetaData metaData)> GetAllBooksWithFilterAsync(BookParameters bookParameters, bool trackChanges)
         {
+            if (!bookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
+
             IQueryable<Book> books = await _manager.Book.GetBooksEntityAsync(trackChanges);
 
-            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(books, bookParameters.PageNumber, bookParameters.PageSize);
+            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(books.FilterBooks(bookParameters), bookParameters.PageNumber, bookParameters.PageSize);
 
             var booksDto = _mapper.Map<IEnumerable<BookDto>>(booksWithMetaData);
             return (booksDto, booksWithMetaData.MetaData);
