@@ -6,6 +6,7 @@ using Entities.RequestFeatures;
 using Repositories.Contracts;
 using Repositories.EFCore.Extensions;
 using Services.Contracts;
+using System.Dynamic;
 
 namespace Services
 {
@@ -14,15 +15,17 @@ namespace Services
         private readonly IRepositoryManager _manager;
         private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
+        private readonly IDataShaper<BookDto> _dataShaper;
 
-        public BookService(IRepositoryManager manager, ILoggerService logger, IMapper mapper)
+        public BookService(IRepositoryManager manager, ILoggerService logger, IMapper mapper, IDataShaper<BookDto> dataShaper)
         {
             _manager = manager;
             _logger = logger;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
 
-        public async Task<(IEnumerable<BookDto> books, MetaData metaData)> GetAllBooksWithFilterAsync(BookParameters bookParameters, bool trackChanges)
+        public async Task<(IEnumerable<ExpandoObject> books, MetaData metaData)> GetAllBooksWithFilterAsync(BookParameters bookParameters, bool trackChanges)
         {
             if (!bookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
 
@@ -32,7 +35,8 @@ namespace Services
             PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(filterBooks, bookParameters.PageNumber, bookParameters.PageSize);
 
             var booksDto = _mapper.Map<IEnumerable<BookDto>>(booksWithMetaData);
-            return (booksDto, booksWithMetaData.MetaData);
+            var shapedData = _dataShaper.ShapeData(booksDto, bookParameters.Fields);
+            return (shapedData, booksWithMetaData.MetaData);
         }
 
         public async Task<BookDto> GetOneBookByIdAsync(int id, bool trackChanges)
