@@ -34,6 +34,7 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureAutoMapperService();
 builder.Services.ConfigureActionFilters();
 builder.Services.ConfigureCors();
+builder.Services.ConfigureDataShaper();
 #endregion
 
 var app = builder.Build();
