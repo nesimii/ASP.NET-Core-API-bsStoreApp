@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.LinkModels;
 using Entities.Models;
 using Entities.RequestFeatures;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Contracts;
 using Repositories.EFCore.Extensions;
 using Services.Contracts;
@@ -15,11 +16,18 @@ namespace Services
         private readonly IRepositoryManager _manager;
         private readonly IMapper _mapper;
         private readonly IBookLinks _bookLinks;
+
         public BookService(IRepositoryManager manager, IMapper mapper, IBookLinks bookLinks)
         {
             _manager = manager;
             _mapper = mapper;
             _bookLinks = bookLinks;
+        }
+
+        public async Task<List<Book>> GetAllBooksAsync(bool trackChanges)
+        {
+            var books = await _manager.Book.GetBooksEntityAsync(trackChanges);
+            return await books.Sort(null).ToListAsync();
         }
 
         public async Task<(LinkResponse linkResponse, MetaData metaData)> GetAllBooksWithFilterAsync(LinkParameters linkParameters, bool trackChanges)

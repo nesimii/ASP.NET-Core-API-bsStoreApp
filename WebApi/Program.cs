@@ -37,6 +37,7 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureDataShaper();
 builder.Services.AddCustomMediaTypes();
 builder.Services.AddScoped<IBookLinks, BookLinks>();
+builder.Services.ConfigureVersioning();
 #endregion
 
 var app = builder.Build();
