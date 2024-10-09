@@ -9,9 +9,10 @@ using System.Text.Json;
 
 namespace Presentation.Controllers
 {
+    //[ApiVersion("1.0", Deprecated = true)]
     [ServiceFilter(typeof(LogFilterAttribute))]
     [ApiController]
-    [Route("api/books")]
+    [Route("api/{v:apiversion}/books")]
     public class BooksController : ControllerBase
     {
         private readonly IServiceManager _manager;
