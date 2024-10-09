@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using Services;
 using Services.Contracts;
 using WebApi.Extensions;
 
@@ -12,9 +13,9 @@ builder.Services.AddControllers(config =>
     config.RespectBrowserAcceptHeader = true;
     config.ReturnHttpNotAcceptable = true;
 })
-    .AddNewtonsoftJson()
     .AddXmlDataContractSerializerFormatters()
     .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+    //.AddNewtonsoftJson()
     .AddCustomCsvFormatter();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -34,6 +35,8 @@ builder.Services.ConfigureAutoMapperService();
 builder.Services.ConfigureActionFilters();
 builder.Services.ConfigureCors();
 builder.Services.ConfigureDataShaper();
+builder.Services.AddCustomMediaTypes();
+builder.Services.AddScoped<IBookLinks, BookLinks>();
 #endregion
 
 var app = builder.Build();

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Entities.Models;
 using Entities.RequestFeatures;
 using Repositories.Contracts;
 using Repositories.EFCore.Extensions;
 using Services.Contracts;
-using System.Dynamic;
 
 namespace Services
 {
@@ -14,26 +14,26 @@ namespace Services
     {
         private readonly IRepositoryManager _manager;
         private readonly IMapper _mapper;
-        private readonly IDataShaper<BookDto> _bookShaper;
-        public BookService(IRepositoryManager manager, IMapper mapper, IDataShaper<BookDto> bookShaper)
+        private readonly IBookLinks _bookLinks;
+        public BookService(IRepositoryManager manager, IMapper mapper, IBookLinks bookLinks)
         {
             _manager = manager;
             _mapper = mapper;
-            _bookShaper = bookShaper;
+            _bookLinks = bookLinks;
         }
 
-        public async Task<(IEnumerable<ExpandoObject> books, MetaData metaData)> GetAllBooksWithFilterAsync(BookParameters bookParameters, bool trackChanges)
+        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetAllBooksWithFilterAsync(LinkParameters linkParameters, bool trackChanges)
         {
-            if (!bookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
+            if (!linkParameters.BookParameters.ValidPriceRange) throw new PriceOutOfRangeBadRequestException();
 
             IQueryable<Book> books = await _manager.Book.GetBooksEntityAsync(trackChanges);
-            IQueryable<Book> filterBooks = books.FilterBooks(bookParameters).Search(bookParameters.SearchTerm).Sort(bookParameters.OrderBy);
+            IQueryable<Book> filterBooks = books.FilterBooks(linkParameters.BookParameters).Search(linkParameters.BookParameters.SearchTerm).Sort(linkParameters.BookParameters.OrderBy);
 
-            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(filterBooks, bookParameters.PageNumber, bookParameters.PageSize);
+            PagedList<Book> booksWithMetaData = await PagedList<Book>.ToPagedListAsync(filterBooks, linkParameters.BookParameters.PageNumber, linkParameters.BookParameters.PageSize);
 
             var booksDto = _mapper.Map<IEnumerable<BookDto>>(booksWithMetaData);
-            var shapedData = _bookShaper.ShapeListData(booksDto, bookParameters.Fields);
-            return (books: shapedData, metaData: booksWithMetaData.MetaData);
+            LinkResponse links = _bookLinks.TryGenerateLinks(booksDto, linkParameters.BookParameters.Fields, linkParameters.HttpContext);
+            return (linkResponse: links, metaData: booksWithMetaData.MetaData);
         }
 
         public async Task<BookDto> GetOneBookByIdAsync(int id, bool trackChanges)
