@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Services;
@@ -41,6 +42,9 @@ builder.Services.AddScoped<IBookLinks, BookLinks>();
 builder.Services.ConfigureVersioning();
 builder.Services.ConfigureResponseCaching();
 builder.Services.ConfigureHttpCacheHeaders();
+builder.Services.AddMemoryCache();
+builder.Services.ConfiguraRateLimitOptions();
+builder.Services.AddHttpContextAccessor();
 #endregion
 
 var app = builder.Build();
@@ -61,6 +65,8 @@ if (app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
+
+app.UseIpRateLimiting();
 
 app.UseCors("CorsPolicy");
 //microsoft recommending using the cache mechanism after calling UseCors
