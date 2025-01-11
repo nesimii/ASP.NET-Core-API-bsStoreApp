@@ -15,7 +15,7 @@ namespace Presentation.Controllers
     //[ApiVersion("1.0", Deprecated = true)]
     [ServiceFilter(typeof(LogFilterAttribute))]
     [ApiController]
-    [Route("api/{v:apiversion}/books")]
+    [Route("api/books")]
     //[ResponseCache(CacheProfileName = "5mins")]
     public class BooksController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace Presentation.Controllers
             _manager = manager;
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpHead]
         [HttpGet(Name = "GetAllBooksAsync")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
@@ -45,6 +45,7 @@ namespace Presentation.Controllers
             return result.linkResponse.HasLinks ? Ok(result.linkResponse.LinkedEntities) : Ok(result.linkResponse.ShapedEntities);
         }
 
+        [Authorize(Roles = "Editor")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetOneBookAsync(int id)
         {
@@ -52,6 +53,7 @@ namespace Presentation.Controllers
             return Ok(book);
         }
 
+        [Authorize(Roles = "Administrator")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPost(Name = "CreateOneBookAsync")]
         public async Task<IActionResult> CreateOneBookAsync([FromBody] BookDtoForInsertion bookDto)

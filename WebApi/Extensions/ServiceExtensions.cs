@@ -1,4 +1,4 @@
-﻿using AspNetCoreRateLimit;
+using AspNetCoreRateLimit;
 using Entities.DataTransferObjects.BookDtos;
 using Entities.Models;
 using Marvin.Cache.Headers;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Presentation.ActionFilters;
@@ -101,7 +102,12 @@ namespace WebApi.Extensions
                 options.ReportApiVersions = true;
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1, 0);
-                //options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+
+                // Authenticate Controllers
+                options.Conventions.Controller<AuthenticationController>().HasApiVersion(new ApiVersion(1, 0));
+
+                // Books Controllers
                 options.Conventions.Controller<BooksController>().HasDeprecatedApiVersion(new ApiVersion(1, 0));
                 options.Conventions.Controller<BooksV2Controller>().HasApiVersion(new ApiVersion(2, 0));
             });
@@ -131,7 +137,7 @@ namespace WebApi.Extensions
                 new RateLimitRule()
                 {
                     Endpoint = "*",
-                    Limit = 3,
+                    Limit = 30,
                     Period = "1m"
                 }
             };
