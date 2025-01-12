@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.BookDtos;
 using Entities.Exceptions;
 using Entities.LinkModels;
 using Entities.Models;
