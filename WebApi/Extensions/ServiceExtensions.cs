@@ -1,6 +1,7 @@
 using AspNetCoreRateLimit;
 using Entities.DataTransferObjects.BookDtos;
 using Entities.Models;
+using Enums.Authorization;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -236,6 +237,18 @@ namespace WebApi.Extensions
                         new List<string>()
                     }
                 });
+            });
+        }
+
+        public static void ConfigureAuthorizationPolicies(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                foreach (string claimName in PermissionClaims.claimList)
+                {
+                    options.AddPolicy(claimName, policy =>
+                        policy.RequireClaim(PermissionClaims.Permission, claimName));
+                }
             });
         }
     }

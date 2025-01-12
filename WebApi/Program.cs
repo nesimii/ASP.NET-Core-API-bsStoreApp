@@ -48,6 +48,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);
+builder.Services.ConfigureAuthorizationPolicies();
 #endregion
 
 var app = builder.Build();

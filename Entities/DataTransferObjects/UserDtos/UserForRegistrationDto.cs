@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Entities.DataTransferObjects.UserDtos;
 
@@ -15,4 +16,5 @@ public class UserForRegistrationDto
     public string? Email { get; init; }
     public string? PhoneNumber { get; init; }
     public ICollection<string>? Roles { get; init; }
+    public ICollection<string>? Claims { get; init; }
 }

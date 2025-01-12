@@ -3,6 +3,7 @@ using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.UserDtos;
 using Entities.Exceptions;
 using Entities.Models;
+using Enums.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,17 @@ public class AuthenticationService : IAuthenticationService
         if (result.Succeeded)
         {
             await _userManager.AddToRolesAsync(user, userForRegistrationDto.Roles);
+
+            if (userForRegistrationDto.Claims != null)
+            {
+                IEnumerable<Claim> userClaims = userForRegistrationDto.Claims
+                    .Where(claim => PermissionClaims.claimList.Contains(claim))
+                    .Select(claim => new Claim(PermissionClaims.Permission, claim));
+                if (userClaims.Any())
+                {
+                    await _userManager.AddClaimsAsync(user, userClaims);
+                }
+            }
         }
         return result;
     }
